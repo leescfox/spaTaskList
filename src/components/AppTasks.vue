@@ -8,21 +8,25 @@
                 </tr>
             </thead>
             <tbody
-                class="headerAndTasksInclude"
+                ref="tasksBody"
                 v-click-outside="{
                     handler: cancelRow,
                     closeConditional: invokeOutsideClick,
                     include: include,
                 }"
+                class="fifth--text"
             >
                 <tr
+                    class="bodyRow"
                     v-for="(task, index) in tasks"
                     :key="index"
                     @click="updateRow(index)"
                     :class="{ chosenRow: isChosen(index) }"
-                    class="bodyRow"
                 >
-                    <td>{{ task.taskName }}</td>
+                    <td>
+                        <div class="overlay" v-show="isDeleteMode"></div>
+                        <span>{{ task.taskName }}</span>
+                    </td>
                     <td>
                         <AppSubtasks
                             :subtasks="task.subtasks"
@@ -50,10 +54,24 @@ export default {
         AppSubtasks,
     },
     computed: {
-        ...mapGetters(["tasks", "clickInclude", "rowIsActive", "rowNumber"]),
+        ...mapGetters([
+            "tasks",
+            "clickInclude",
+            "rowIsActive",
+            "rowNumber",
+            "actionName",
+            "actionIsActive",
+        ]),
+        isDeleteMode() {
+            return this.actionName === "delete" && this.actionIsActive
+        },
     },
     methods: {
-        ...mapActions(["checkboxValueChange", "updateRow"]),
+        ...mapActions([
+            "addIncludeElements",
+            "checkboxValueChange",
+            "updateRow",
+        ]),
         isChosen(index) {
             return this.rowIsActive && index === this.rowNumber
         },
@@ -67,14 +85,17 @@ export default {
             return Array.from(this.clickInclude)
         },
     },
+    mounted() {
+        this.addIncludeElements([this.$refs["tasksBody"]])
+    },
 }
 </script>
 
 <style lang="scss" scoped>
 .chosenRow {
-    background-color: #bbdefb;
+    background-color: var(--v-third-base);
     &:hover {
-        background-color: #90caf9 !important;
+        background-color: var(--v-fourth-base) !important;
     }
 }
 

@@ -69,8 +69,8 @@ export default new Vuex.Store({
         localStorageGet(state, tasks) {
             state.tasks = tasks
         },
-        setClickInclude(state, HTMLcollection) {
-            state.clickInclude = HTMLcollection
+        addIncludeElements(state, newElements) {
+            state.clickInclude = state.clickInclude.concat(newElements)
         },
         setHistoryState(state, initialTaskState) {
             state.historyArray = [initialTaskState]
@@ -130,8 +130,8 @@ export default new Vuex.Store({
             if (tasks === null) return
             commit("localStorageGet", JSON.parse(tasks))
         },
-        setClickInclude({ commit }, includeElements) {
-            commit("setClickInclude", includeElements)
+        addIncludeElements({ commit }, includeElements) {
+            commit("addIncludeElements", includeElements)
         },
         setHistoryState({ commit, getters }) {
             commit("setHistoryState", getters.taskStringified)
@@ -227,52 +227,6 @@ export default new Vuex.Store({
 function getMock() {
     return [
         {
-            taskName: "Учёба",
-            subtasks: [
-                {
-                    name: "Культура профессиональной коммуникации",
-                    checked: true,
-                },
-                {
-                    name: "ТПР",
-                    checked: false,
-                },
-                {
-                    name: "Социология",
-                    checked: false,
-                },
-                {
-                    name: "БД",
-                    checked: true,
-                },
-                {
-                    name: "ООП",
-                    checked: false,
-                },
-                {
-                    name: "МИСПРИС",
-                    checked: false,
-                },
-            ],
-        },
-        {
-            taskName: "Дом",
-            subtasks: [
-                {
-                    name: "Уборка",
-                    checked: true,
-                },
-                {
-                    name: "Посуда",
-                    checked: false,
-                },
-                {
-                    name: "Стирка",
-                    checked: true,
-                },
-            ],
-        },
-        {
             taskName: "Покупки",
             subtasks: [
                 {
@@ -301,6 +255,52 @@ function getMock() {
                 },
                 {
                     name: "Торт",
+                    checked: false,
+                },
+            ],
+        },
+        {
+            taskName: "Дом",
+            subtasks: [
+                {
+                    name: "Уборка",
+                    checked: true,
+                },
+                {
+                    name: "Посуда",
+                    checked: false,
+                },
+                {
+                    name: "Стирка",
+                    checked: true,
+                },
+            ],
+        },
+        {
+            taskName: "Учёба",
+            subtasks: [
+                {
+                    name: "Культура профессиональной коммуникации",
+                    checked: true,
+                },
+                {
+                    name: "ТПР",
+                    checked: false,
+                },
+                {
+                    name: "Социология",
+                    checked: false,
+                },
+                {
+                    name: "БД",
+                    checked: true,
+                },
+                {
+                    name: "ООП",
+                    checked: false,
+                },
+                {
+                    name: "МИСПРИС",
                     checked: false,
                 },
             ],

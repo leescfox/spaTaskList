@@ -1,0 +1,25 @@
+%tableBorder {
+    &:not(:last-of-type) {
+        border-right: thin solid rgba(0, 0, 0, 0.12);
+    }
+}
+
+%tableRow {
+    transform: scale(1);
+}
+
+%tableRowOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    &:hover {
+        background-color: var(--v-deleteMode-base);
+        opacity: 0.2;
+        cursor: pointer;
+    }
+}
+
+$data-table-regular-row-font-size: 16px;

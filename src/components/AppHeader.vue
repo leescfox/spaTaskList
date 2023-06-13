@@ -1,38 +1,41 @@
 <template>
-    <v-app-bar app flat height="100px">
+    <v-app-bar app flat height="100px" color="secondary">
         <v-container>
             <div align="left">
-                <h2 class="appTitle">Список заданий</h2>
+                <h2 class="appTitle fifth--text">Список заданий</h2>
             </div>
             <div class="mt-2" align="left">
                 <v-btn
+                    ref="addBtn"
                     fab
                     small
                     outlined
                     color="green darken-1"
-                    class="mr-3 headerAndTasksInclude actionBtn"
+                    class="mr-3 actionBtn"
                     @click="updateAction('add')"
                     v-click-outside="clickOutside"
                 >
                     <v-icon> mdi-{{ iconAdd }} </v-icon>
                 </v-btn>
                 <v-btn
+                    ref="editBtn"
                     fab
                     small
                     outlined
                     color="blue darken-1"
-                    class="mr-3 headerAndTasksInclude actionBtn"
+                    class="mr-3 actionBtn"
                     @click="updateAction('edit')"
                     v-click-outside="clickOutside"
                 >
                     <v-icon> mdi-{{ iconEdit }} </v-icon>
                 </v-btn>
                 <v-btn
+                    ref="deleteBtn"
                     fab
                     small
                     outlined
                     color="red darken-2"
-                    class="mr-3 headerAndTasksInclude actionBtn"
+                    class="mr-3 actionBtn"
                     @click="updateAction('delete')"
                     v-click-outside="clickOutside"
                 >
@@ -76,7 +79,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions(["updateAction"]),
+        ...mapActions(["addIncludeElements", "updateAction"]),
         cancelAction() {
             this.updateAction("")
         },
@@ -87,13 +90,19 @@ export default {
             return Array.from(this.clickInclude)
         },
     },
+    mounted() {
+        this.addIncludeElements([
+            this.$refs["addBtn"].$el,
+            this.$refs["editBtn"].$el,
+            this.$refs["deleteBtn"].$el,
+        ])
+    },
 }
 </script>
 
 <style lang="scss" scoped>
 .appTitle {
     font-family: Roboto, sans-serif;
-    color: #2c3e50;
     line-height: 1;
 }
 

@@ -7,6 +7,7 @@
             v-model="modalState"
         >
             <v-card
+                class="fifth--text"
                 v-click-outside="{
                     handler: unsavedExitAttempt,
                     closeConditional: isOutsideModalClick,
@@ -73,15 +74,20 @@
                                     </thead>
                                     <tbody class="modalTBody">
                                         <tr
+                                            class="bodyRow"
                                             v-for="(
                                                 subtask, index
                                             ) in task.subtasks"
                                             :key="index"
                                             @click="subtaskRowClick(index)"
-                                            class="bodyRow"
                                         >
-                                            <td>
+                                            <td class="сheckboxCell px-0">
+                                                <div
+                                                    class="overlay"
+                                                    v-show="deleteSubtaskMode"
+                                                ></div>
                                                 <v-simple-checkbox
+                                                    color="primary"
                                                     :value="subtask.checked"
                                                     @input="
                                                         checkboxValueChange(
@@ -91,13 +97,14 @@
                                                     "
                                                 ></v-simple-checkbox>
                                             </td>
-                                            <td>
+                                            <td class="px-1">
                                                 <v-text-field
                                                     ref="subtaskInput"
                                                     placeholder="Название задачи"
                                                     solo
                                                     dense
                                                     clearable
+                                                    hide-details
                                                     :value="subtask.name"
                                                     @change="
                                                         subtaskValueChange(
@@ -166,8 +173,10 @@
             </v-card>
         </v-dialog>
         <v-dialog persistent max-width="400px" v-model="unsavedExitModal">
-            <v-card>
-                <v-card-title>Выйти без сохранения?</v-card-title>
+            <v-card color="secondary">
+                <v-card-title class="fifth--text"
+                    >Выйти без сохранения?</v-card-title
+                >
                 <v-card-text class="py-0 modalCardBody"
                     >Вы действительно хотите выйти не сохранив
                     изменения?</v-card-text
@@ -175,13 +184,13 @@
                 <v-card-actions class="rowContainer actionsRow">
                     <v-btn
                         outlined
-                        color="green darken-1"
+                        color="red darken-2"
                         @click="closeExitModal(true)"
                         >Да</v-btn
                     >
                     <v-btn
                         outlined
-                        color="red darken-2"
+                        color="green darken-1"
                         @click="closeExitModal(false)"
                         >Нет</v-btn
                     >
@@ -193,7 +202,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex"
-// exit btn!!!!
+
 export default {
     name: "AppTaskModal",
     data() {
@@ -399,6 +408,14 @@ export default {
         .statusCell {
             width: 0%;
         }
+    }
+}
+
+.сheckboxCell {
+    display: flex;
+    justify-content: center;
+    .v-input--selection-controls__input {
+        margin: 0;
     }
 }
 </style>

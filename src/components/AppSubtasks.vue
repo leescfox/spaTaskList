@@ -2,7 +2,7 @@
     <div class="mb-3 subtasksContainer">
         <div class="pl-3">
             <v-checkbox
-                class="pa-0 mt-5 singleTask"
+                class="pa-0 mt-5 singleTask fifth--text"
                 hide-details
                 v-for="(subtask, index) in subtasksMainPart"
                 :key="index"

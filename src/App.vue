@@ -3,7 +3,7 @@
         <AppHeader />
         <v-main>
             <v-container>
-                <AppTasks />
+                <AppTasks ref="Tasks" />
             </v-container>
             <AppTaskModal />
             <AppDeleteModal />
@@ -27,31 +27,28 @@ export default {
         AppDeleteModal,
     },
     methods: {
-        ...mapActions(["localStorageGet", "setClickInclude"]),
+        ...mapActions(["localStorageGet"]),
     },
     mounted() {
         this.localStorageGet()
-        this.setClickInclude(
-            document.getElementsByClassName("headerAndTasksInclude")
-        )
     },
 }
 </script>
 
 <style lang="scss">
-%tableBorder {
-    &:not(:last-of-type) {
-        border-right: thin solid rgba(0, 0, 0, 0.12);
-    }
-}
-
 .headerRow > th {
     @extend %tableBorder;
     font-size: 1rem !important;
 }
 
-.bodyRow > td {
-    @extend %tableBorder;
+.bodyRow {
+    @extend %tableRow;
+    .overlay {
+        @extend %tableRowOverlay;
+    }
+    & > td {
+        @extend %tableBorder;
+    }
 }
 
 .actionBtn {
