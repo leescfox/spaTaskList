@@ -21,7 +21,10 @@
                     v-for="(task, index) in tasks"
                     :key="index"
                     @click="updateRow(index)"
-                    :class="{ chosenRow: isChosen(index) }"
+                    :class="{
+                        chosenRow: isChosen(index),
+                        chooseToEdit: isEditMode,
+                    }"
                 >
                     <td>
                         <div class="overlay" v-show="isDeleteMode"></div>
@@ -65,6 +68,9 @@ export default {
         isDeleteMode() {
             return this.actionName === "delete" && this.actionIsActive
         },
+        isEditMode() {
+            return this.actionName === "edit" && this.actionIsActive
+        },
     },
     methods: {
         ...mapActions([
@@ -96,6 +102,12 @@ export default {
     background-color: var(--v-third-base);
     &:hover {
         background-color: var(--v-fourth-base) !important;
+    }
+}
+
+.chooseToEdit {
+    &:hover {
+        background-color: var(--v-third-base) !important;
     }
 }
 
