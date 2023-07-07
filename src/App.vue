@@ -29,7 +29,7 @@
         methods: {
             ...mapActions(["localStorageGet", "setIds"]),
         },
-        mounted() {
+        created() {
             this.localStorageGet()
             this.setIds()
         },

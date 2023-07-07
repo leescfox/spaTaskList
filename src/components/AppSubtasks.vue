@@ -77,15 +77,12 @@
                 this.$emit("checkbox-value-change", index)
             },
             setHeight() {
-                console.log(this.$refs["showHideContainer"])
-                console.log(this.subtasks)
                 this.$refs["showHideContainer"].style.maxHeight = this.showAll
                     ? `${this.$refs["showHideContainer"].scrollHeight}px`
                     : 0
             },
             showAndHide() {
                 this.showAll = !this.showAll
-                console.log(this.showAll, this.btnText)
                 this.setHeight()
             },
         },
@@ -94,13 +91,8 @@
                 this.showAll = false
             },
             subtasksLength() {
-                console.log(1)
                 this.setHeight()
             },
-        },
-        mounted() {
-            console.log(2)
-            this.setHeight()
         },
     }
 </script>
