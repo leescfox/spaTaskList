@@ -1,55 +1,55 @@
 <template>
     <v-dialog persistent max-width="400px" v-model="modalState">
         <v-card color="secondary">
-            <v-card-title class="fifth--text">Удалить задание?</v-card-title>
-            <v-card-text class="py-0 modalCardBody"
-                >Вы действительно хотите удалить это задание?</v-card-text
-            >
-            <v-card-actions class="actionsRow">
-                <v-btn outlined color="primary" @click="processAnswer(true)"
-                    >Да</v-btn
-                >
-                <v-btn outlined color="primary" @click="processAnswer(false)"
-                    >Нет</v-btn
-                >
+            <v-card-title class="fifth--text"> Удалить задание? </v-card-title>
+            <v-card-text class="py-0 modal-card-body">
+                Вы действительно хотите удалить это задание?
+            </v-card-text>
+            <v-card-actions class="actions-row">
+                <v-btn outlined color="primary" @click="processAnswer(true)">
+                    Да
+                </v-btn>
+                <v-btn outlined color="primary" @click="processAnswer(false)">
+                    Нет
+                </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex"
+    import { mapActions, mapState } from "vuex"
 
-export default {
-    name: "AppDeleteModal",
-    computed: {
-        ...mapGetters(["showDeleteModal"]),
-        modalState: {
-            get() {
-                return this.showDeleteModal
+    export default {
+        name: "AppDeleteModal",
+        computed: {
+            ...mapState(["showDeleteModal"]),
+            modalState: {
+                get() {
+                    return this.showDeleteModal
+                },
+                set() {
+                    this.closeDeleteModal()
+                },
             },
-            set() {
+        },
+        methods: {
+            ...mapActions(["closeDeleteModal", "deleteTask"]),
+            processAnswer(answer) {
+                if (answer) this.deleteTask()
                 this.closeDeleteModal()
             },
         },
-    },
-    methods: {
-        ...mapActions(["closeDeleteModal", "deleteTask"]),
-        processAnswer(answer) {
-            if (answer === true) this.deleteTask()
-            this.closeDeleteModal()
-        },
-    },
-}
+    }
 </script>
 
 <style lang="scss" scoped>
-.modalCardBody {
-    font-size: 1rem;
-}
+    .modal-card-body {
+        font-size: 1rem;
+    }
 
-.actionsRow {
-    display: flex;
-    justify-content: flex-end;
-}
+    .actions-row {
+        display: flex;
+        justify-content: flex-end;
+    }
 </style>

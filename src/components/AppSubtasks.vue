@@ -1,114 +1,122 @@
 <template>
-    <div class="mb-3 subtasksContainer">
-        <div class="pl-3">
+    <div class="mb-3 subtasks-container">
+        <div class="pl-2">
             <v-checkbox
-                class="pa-0 mt-5 singleTask fifth--text"
+                class="pa-0 mt-5 single-task fifth--text"
                 hide-details
                 v-for="(subtask, index) in subtasksMainPart"
-                :key="index"
+                :key="subtask.id"
                 :input-value="subtask.checked"
                 :label="subtask.name"
                 @click="checkboxValueChange(index)"
             ></v-checkbox>
         </div>
-        <div ref="showHideContainer" class="pb-3 pl-3 showHideContainer">
+        <div ref="showHideContainer" class="pb-2 pl-2 show-hide-container">
             <v-checkbox
-                class="pa-0 mt-5 singleTask"
+                class="pa-0 mt-5 single-task"
                 hide-details
                 v-for="(subtask, index) in subtasksHidePart"
-                :key="index"
+                :key="subtask.id"
                 :input-value="subtask.checked"
                 :label="subtask.name"
                 @click="checkboxValueChange(maxElemsToShow + index)"
             ></v-checkbox>
         </div>
-        <div class="pl-3">
+        <div class="pl-2">
             <v-btn
                 v-if="showBtn"
                 @click="showAndHide"
-                class="showMoreLessBtn"
+                class="show-more-less-btn"
                 color="primary"
                 elevation="4"
                 small
                 outlined
-                >{{ btnText }}</v-btn
             >
+                {{ btnText }}
+            </v-btn>
         </div>
     </div>
 </template>
 
 <script>
-export default {
-    name: "AppSubtasks",
-    props: {
-        subtasks: {
-            type: Array,
-            default() {
-                return []
+    export default {
+        name: "AppSubtasks",
+        props: {
+            subtasks: {
+                type: Array,
+                default() {
+                    return []
+                },
             },
         },
-    },
-    data() {
-        return {
-            maxElemsToShow: 4,
-            showAll: false,
-        }
-    },
-    computed: {
-        subtasksLength() {
-            return this.subtasks.length
+        data() {
+            return {
+                maxElemsToShow: 4,
+                showAll: false,
+            }
         },
-        subtasksMainPart() {
-            return this.subtasks.slice(0, this.maxElemsToShow)
+        computed: {
+            subtasksLength() {
+                return this.subtasks.length
+            },
+            subtasksMainPart() {
+                return this.subtasks.slice(0, this.maxElemsToShow)
+            },
+            subtasksHidePart() {
+                return this.subtasks.slice(this.maxElemsToShow)
+            },
+            showBtn() {
+                return this.subtasksHidePart.length > 0
+            },
+            btnText() {
+                return this.showAll ? "Свернуть" : "Развернуть"
+            },
         },
-        subtasksHidePart() {
-            return this.subtasks.slice(this.maxElemsToShow)
-        },
-        showBtn() {
-            return this.subtasksHidePart.length > 0
-        },
-        btnText() {
-            return this.showAll === true ? "Свернуть" : "Развернуть"
-        },
-    },
-    methods: {
-        checkboxValueChange(index) {
-            this.$emit("checkbox-value-change", index)
-        },
-        setHeight() {
-            this.$refs["showHideContainer"].style.maxHeight =
-                this.showAll === true
+        methods: {
+            checkboxValueChange(index) {
+                this.$emit("checkbox-value-change", index)
+            },
+            setHeight() {
+                console.log(this.$refs["showHideContainer"])
+                console.log(this.subtasks)
+                this.$refs["showHideContainer"].style.maxHeight = this.showAll
                     ? `${this.$refs["showHideContainer"].scrollHeight}px`
                     : 0
+            },
+            showAndHide() {
+                this.showAll = !this.showAll
+                console.log(this.showAll, this.btnText)
+                this.setHeight()
+            },
         },
-        showAndHide() {
-            this.showAll = !this.showAll
+        watch: {
+            showBtn() {
+                this.showAll = false
+            },
+            subtasksLength() {
+                console.log(1)
+                this.setHeight()
+            },
+        },
+        mounted() {
+            console.log(2)
             this.setHeight()
         },
-    },
-    watch: {
-        showBtn() {
-            this.showAll = false
-        },
-        subtasksLength() {
-            this.setHeight()
-        },
-    },
-}
+    }
 </script>
 
 <style lang="scss" scoped>
-.singleTask {
-    width: max-content;
-}
+    .single-task {
+        width: max-content;
+    }
 
-.showHideContainer {
-    overflow: hidden;
-    transition: max-height 0.6s ease-out;
-    max-height: 0;
-}
+    .show-hide-container {
+        overflow: hidden;
+        transition: max-height 0.6s ease-out;
+        max-height: 0;
+    }
 
-.showMoreLessBtn {
-    min-width: 25% !important;
-}
+    .show-more-less-btn {
+        min-width: 25% !important;
+    }
 </style>

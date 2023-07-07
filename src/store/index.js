@@ -1,11 +1,12 @@
 import Vue from "vue"
 import Vuex from "vuex"
+import startState from "@/store/startState"
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        tasks: getMock(),
+        tasks: startState,
         historyArray: [],
         historyArrayIndex: 0,
         clickInclude: [],
@@ -19,291 +20,196 @@ export default new Vuex.Store({
         },
         showTaskModal: false,
         showDeleteModal: false,
+        id: 0,
     },
     getters: {
-        tasks(state) {
-            return state.tasks
-        },
-        clickInclude(state) {
-            return state.clickInclude
-        },
-        rowIsActive(state) {
-            return state.row.isActive
-        },
-        rowNumber(state) {
-            return state.row.number
-        },
-        actionIsActive(state) {
-            return state.action.isActive
-        },
-        actionName(state) {
-            return state.action.name
-        },
-        showTaskModal(state) {
-            return state.showTaskModal
-        },
-        showDeleteModal(state) {
-            return state.showDeleteModal
-        },
-        taskStringified(state, getters) {
+        taskStringified(state) {
             let taskObject = {
                 taskName: "",
                 subtasks: [],
             }
-            if (getters.rowNumber !== -1 && getters.actionName === "edit") {
-                taskObject = getters.tasks[getters.rowNumber]
+            if (state.row.number !== -1 && state.action.name === "edit") {
+                taskObject = state.tasks[state.row.number]
             }
             return JSON.stringify(taskObject)
         },
-        historyArrayLength(state) {
-            return state.historyArray.length
-        },
-        historyArrayIndex(state) {
-            return state.historyArrayIndex
-        },
-        historyArrayCurrentElement(state, getters) {
-            return state.historyArray[getters.historyArrayIndex]
+        historyArrayCurrentElement(state) {
+            return state.historyArray[state.historyArrayIndex]
         },
     },
     mutations: {
-        localStorageGet(state, tasks) {
+        SET_IDS(state) {
+            for (let i = 0; i < state.tasks.length; i++) {
+                state.tasks[i].id = ++state.id
+                for (let j = 0; j < state.tasks[i].subtasks.length; j++) {
+                    state.tasks[i].subtasks[j].id = ++state.id
+                }
+            }
+        },
+        INCREASE_ID(state) {
+            state.id += 1
+        },
+        LOCAL_STORAGE_GET(state, tasks) {
             state.tasks = tasks
         },
-        addIncludeElements(state, newElements) {
+        ADD_INCLUDE_ELEMENTS(state, newElements) {
             state.clickInclude = state.clickInclude.concat(newElements)
         },
-        setHistoryState(state, initialTaskState) {
+        SET_HISTORY_STATE(state, initialTaskState) {
             state.historyArray = [initialTaskState]
             state.historyArrayIndex = 0
         },
-        updateRowIsActive(state, newValue) {
+        UPDATE_ROW_IS_ACTIVE(state, newValue) {
             state.row.isActive = newValue
         },
-        updateRowNumber(state, newValue) {
+        UPDATE_ROW_NUMBER(state, newValue) {
             state.row.number = newValue
         },
-        updateActionIsActive(state, newValue) {
+        UPDATE_ACTION_IS_ACTIVE(state, newValue) {
             state.action.isActive = newValue
         },
-        updateActionName(state, newValue) {
+        UPDATE_ACTION_NAME(state, newValue) {
             state.action.name = newValue
         },
-        updateHistory(state, { newTaskState, index }) {
+        UPDATE_HISTORY(state, { newTaskState, index }) {
             state.historyArray.length = index + 1
             state.historyArray.push(newTaskState)
             state.historyArrayIndex++
         },
-        historyStep(state, step) {
+        HISTORY_STEP(state, step) {
             state.historyArrayIndex += step
         },
-        deactivateRowAndAction(state) {
+        DEACTIVATE_ROW_AND_ACTION(state) {
             state.row.isActive = false
             state.action.isActive = false
         },
-        showTaskModal(state, newValue) {
+        SHOW_TASK_MODAL(state, newValue) {
             state.showTaskModal = newValue
         },
-        showDeleteModal(state, newValue) {
+        SHOW_DELETE_MODAL(state, newValue) {
             state.showDeleteModal = newValue
         },
-        checkboxValueChange(state, { taskIndex, subtaskIndex }) {
+        CHECKBOX_VALUE_CHANGE(state, { taskIndex, subtaskIndex }) {
             state.tasks[taskIndex].subtasks[subtaskIndex].checked =
                 !state.tasks[taskIndex].subtasks[subtaskIndex].checked
         },
-        saveTask(state, { updatedTask, index }) {
+        SAVE_TASK(state, { updatedTask, index }) {
             Vue.set(state.tasks, index, updatedTask)
         },
-        unshiftNewTask(state, newTask) {
+        UNSHIFT_NEW_TASK(state, newTask) {
             state.tasks.unshift(newTask)
             state.row.number = 0
         },
-        deleteTask(state, index) {
+        DELETE_TASK(state, index) {
             state.tasks.splice(index, 1)
         },
-        localStorageSet(state, tasks) {
+        LOCAL_STORAGE_SET(state, tasks) {
             localStorage.setItem("tasks", JSON.stringify(tasks))
         },
     },
     actions: {
+        setIds({ commit }) {
+            commit("SET_IDS")
+        },
+        getId({ commit, state }) {
+            commit("INCREASE_ID")
+            return state.id
+        },
         localStorageGet({ commit }) {
             let tasks = localStorage.getItem("tasks")
             if (tasks === null) return
-            commit("localStorageGet", JSON.parse(tasks))
+            commit("LOCAL_STORAGE_GET", JSON.parse(tasks))
         },
         addIncludeElements({ commit }, includeElements) {
-            commit("addIncludeElements", includeElements)
+            commit("ADD_INCLUDE_ELEMENTS", includeElements)
         },
         setHistoryState({ commit, getters }) {
-            commit("setHistoryState", getters.taskStringified)
+            commit("SET_HISTORY_STATE", getters.taskStringified)
         },
-        updateRow({ commit, getters, dispatch }, rowNumber) {
+        updateRow({ commit, state, dispatch }, rowNumber) {
             if (rowNumber === -1) {
-                commit("updateRowIsActive", false)
+                commit("UPDATE_ROW_IS_ACTIVE", false)
                 return
             }
-            commit("updateRowIsActive", true)
-            commit("updateRowNumber", rowNumber)
-            if (getters.actionIsActive === false) return
-            commit("deactivateRowAndAction")
-            switch (getters.actionName) {
+            commit("UPDATE_ROW_IS_ACTIVE", true)
+            commit("UPDATE_ROW_NUMBER", rowNumber)
+            if (state.action.isActive === false) return
+            commit("DEACTIVATE_ROW_AND_ACTION")
+            switch (state.action.name) {
                 case "edit":
-                    commit("showTaskModal", true)
+                    commit("SHOW_TASK_MODAL", true)
                     dispatch("setHistoryState")
                     break
                 case "delete":
-                    commit("showDeleteModal", true)
+                    commit("SHOW_DELETE_MODAL", true)
                     break
                 default:
                     break
             }
         },
-        updateAction({ commit, getters, dispatch }, action) {
+        updateAction({ commit, state, dispatch }, action) {
             if (
                 action === "" ||
-                (action === getters.actionName &&
-                    getters.actionIsActive === true)
+                (action === state.action.name && state.action.isActive)
             ) {
-                commit("updateActionIsActive", false)
+                commit("UPDATE_ACTION_IS_ACTIVE", false)
                 return
             }
-            commit("updateActionIsActive", true)
-            commit("updateActionName", action)
+            commit("UPDATE_ACTION_IS_ACTIVE", true)
+            commit("UPDATE_ACTION_NAME", action)
             if (action === "add") {
-                commit("showTaskModal", true)
-                commit("deactivateRowAndAction")
+                commit("SHOW_TASK_MODAL", true)
+                commit("DEACTIVATE_ROW_AND_ACTION")
                 return
             }
-            if (getters.rowIsActive === false) return
-            commit("deactivateRowAndAction")
+            if (!state.row.isActive) return
+            commit("DEACTIVATE_ROW_AND_ACTION")
             switch (action) {
                 case "edit":
-                    commit("showTaskModal", true)
+                    commit("SHOW_TASK_MODAL", true)
                     dispatch("setHistoryState")
                     break
                 case "delete":
-                    commit("showDeleteModal", true)
+                    commit("SHOW_DELETE_MODAL", true)
                     break
                 default:
                     break
             }
         },
-        updateHistory({ commit, getters }, taskObject) {
-            commit("updateHistory", {
+        updateHistory({ commit, state }, taskObject) {
+            commit("UPDATE_HISTORY", {
                 newTaskState: JSON.stringify(taskObject),
-                index: getters.historyArrayIndex,
+                index: state.historyArrayIndex,
             })
         },
         historyStep({ commit }, step) {
-            commit("historyStep", step)
+            commit("HISTORY_STEP", step)
         },
-        checkboxValueChange({ commit, getters }, { taskIndex, subtaskIndex }) {
-            commit("checkboxValueChange", { taskIndex, subtaskIndex })
-            commit("localStorageSet", getters.tasks)
+        checkboxValueChange({ commit, state }, { taskIndex, subtaskIndex }) {
+            commit("CHECKBOX_VALUE_CHANGE", { taskIndex, subtaskIndex })
+            commit("LOCAL_STORAGE_SET", state.tasks)
         },
-        saveTask({ commit, getters }, taskObject) {
-            commit("saveTask", {
+        saveTask({ commit, state }, taskObject) {
+            commit("SAVE_TASK", {
                 updatedTask: JSON.parse(JSON.stringify(taskObject)),
-                index: getters.rowNumber,
+                index: state.row.number,
             })
-            commit("localStorageSet", getters.tasks)
+            commit("LOCAL_STORAGE_SET", state.tasks)
         },
-        unshiftNewTask({ commit, getters }, taskObject) {
-            commit("unshiftNewTask", JSON.parse(JSON.stringify(taskObject)))
-            commit("localStorageSet", getters.tasks)
+        async unshiftNewTask({ commit, state, dispatch }, taskObject) {
+            taskObject.id = await dispatch("getId")
+            commit("UNSHIFT_NEW_TASK", JSON.parse(JSON.stringify(taskObject)))
+            commit("LOCAL_STORAGE_SET", state.tasks)
         },
-        deleteTask({ commit, getters }) {
-            commit("deleteTask", getters.rowNumber)
-            commit("localStorageSet", getters.tasks)
+        deleteTask({ commit, state }) {
+            commit("DELETE_TASK", state.row.number)
+            commit("LOCAL_STORAGE_SET", state.tasks)
         },
         closeTaskModal({ commit }) {
-            commit("showTaskModal", false)
+            commit("SHOW_TASK_MODAL", false)
         },
         closeDeleteModal({ commit }) {
-            commit("showDeleteModal", false)
+            commit("SHOW_DELETE_MODAL", false)
         },
     },
 })
-
-function getMock() {
-    return [
-        {
-            taskName: "Покупки",
-            subtasks: [
-                {
-                    name: "Апельсины",
-                    checked: false,
-                },
-                {
-                    name: "Яблоки",
-                    checked: true,
-                },
-                {
-                    name: "Лук",
-                    checked: false,
-                },
-                {
-                    name: "Курица",
-                    checked: false,
-                },
-                {
-                    name: "Плавленый сыр",
-                    checked: true,
-                },
-                {
-                    name: "Печенье",
-                    checked: false,
-                },
-                {
-                    name: "Торт",
-                    checked: false,
-                },
-            ],
-        },
-        {
-            taskName: "Дом",
-            subtasks: [
-                {
-                    name: "Уборка",
-                    checked: true,
-                },
-                {
-                    name: "Посуда",
-                    checked: false,
-                },
-                {
-                    name: "Стирка",
-                    checked: true,
-                },
-            ],
-        },
-        {
-            taskName: "Учёба",
-            subtasks: [
-                {
-                    name: "Культура профессиональной коммуникации",
-                    checked: true,
-                },
-                {
-                    name: "ТПР",
-                    checked: false,
-                },
-                {
-                    name: "Социология",
-                    checked: false,
-                },
-                {
-                    name: "БД",
-                    checked: true,
-                },
-                {
-                    name: "ООП",
-                    checked: false,
-                },
-                {
-                    name: "МИСПРИС",
-                    checked: false,
-                },
-            ],
-        },
-    ]
-}

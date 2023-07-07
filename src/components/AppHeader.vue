@@ -1,17 +1,17 @@
 <template>
     <v-app-bar app flat height="100px" color="secondary">
         <v-container>
-            <div align="left">
-                <h2 class="appTitle fifth--text">Список заданий</h2>
+            <div>
+                <h2 class="app-title fifth--text">Список заданий</h2>
             </div>
-            <div class="mt-2" align="left">
+            <div class="mt-2">
                 <v-btn
                     ref="addBtn"
                     fab
                     small
                     outlined
                     color="green darken-1"
-                    class="mr-3 actionBtn"
+                    class="mr-3 action-btn"
                     @click="updateAction('add')"
                     v-click-outside="clickOutside"
                 >
@@ -23,7 +23,7 @@
                     small
                     outlined
                     color="blue darken-1"
-                    class="mr-3 actionBtn"
+                    class="mr-3 action-btn"
                     @click="updateAction('edit')"
                     v-click-outside="clickOutside"
                 >
@@ -35,7 +35,7 @@
                     small
                     outlined
                     color="red darken-2"
-                    class="mr-3 actionBtn"
+                    class="mr-3 action-btn"
                     @click="updateAction('delete')"
                     v-click-outside="clickOutside"
                 >
@@ -47,67 +47,67 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex"
+    import { mapState, mapActions } from "vuex"
 
-export default {
-    name: "AppHeader",
-    data() {
-        return {
-            clickOutside: {
-                handler: this.cancelAction,
-                closeConditional: this.invokeOutsideClick,
-                include: this.include,
+    export default {
+        name: "AppHeader",
+        data() {
+            return {
+                clickOutside: {
+                    handler: this.cancelAction,
+                    closeConditional: this.invokeOutsideClick,
+                    include: this.include,
+                },
+            }
+        },
+        computed: {
+            ...mapState(["clickInclude", "action"]),
+            iconAdd() {
+                return this.action.isActive && this.action.name === "add"
+                    ? "window-close"
+                    : "plus"
             },
-        }
-    },
-    computed: {
-        ...mapGetters(["clickInclude", "actionIsActive", "actionName"]),
-        iconAdd() {
-            return this.actionIsActive && this.actionName === "add"
-                ? "window-close"
-                : "plus"
+            iconEdit() {
+                return this.action.isActive && this.action.name === "edit"
+                    ? "window-close"
+                    : "pencil-outline"
+            },
+            iconDelete() {
+                return this.action.isActive && this.action.name === "delete"
+                    ? "window-close"
+                    : "delete-outline"
+            },
         },
-        iconEdit() {
-            return this.actionIsActive && this.actionName === "edit"
-                ? "window-close"
-                : "pencil-outline"
+        methods: {
+            ...mapActions(["addIncludeElements", "updateAction"]),
+            cancelAction() {
+                this.updateAction("")
+            },
+            invokeOutsideClick() {
+                return this.action.isActive
+            },
+            include() {
+                return Array.from(this.clickInclude)
+            },
         },
-        iconDelete() {
-            return this.actionIsActive && this.actionName === "delete"
-                ? "window-close"
-                : "delete-outline"
+        mounted() {
+            this.addIncludeElements([
+                this.$refs["addBtn"].$el,
+                this.$refs["editBtn"].$el,
+                this.$refs["deleteBtn"].$el,
+            ])
         },
-    },
-    methods: {
-        ...mapActions(["addIncludeElements", "updateAction"]),
-        cancelAction() {
-            this.updateAction("")
-        },
-        invokeOutsideClick() {
-            return this.actionIsActive
-        },
-        include() {
-            return Array.from(this.clickInclude)
-        },
-    },
-    mounted() {
-        this.addIncludeElements([
-            this.$refs["addBtn"].$el,
-            this.$refs["editBtn"].$el,
-            this.$refs["deleteBtn"].$el,
-        ])
-    },
-}
+    }
 </script>
 
 <style lang="scss" scoped>
-.appTitle {
-    font-family: Roboto, sans-serif;
-    line-height: 1;
-}
+    .app-title {
+        font-family: Roboto, sans-serif;
+        line-height: 1;
+    }
 
-.notActive::before {
-    background-color: transparent !important;
-    transition: background-color 1s;
-}
+    .notActive::before {
+        background-color: transparent !important;
+        transition: background-color 1s;
+    }
 </style>

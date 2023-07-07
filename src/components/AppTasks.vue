@@ -2,7 +2,7 @@
     <div>
         <v-simple-table>
             <thead>
-                <tr class="headerRow">
+                <tr class="header-row">
                     <th>Задания</th>
                     <th>Задачи</th>
                 </tr>
@@ -17,13 +17,13 @@
                 class="fifth--text"
             >
                 <tr
-                    class="bodyRow"
+                    class="body-row"
                     v-for="(task, index) in tasks"
-                    :key="index"
+                    :key="task.id"
                     @click="updateRow(index)"
                     :class="{
-                        chosenRow: isChosen(index),
-                        chooseToEdit: isEditMode,
+                        'chosen-row': isChosen(index),
+                        'choose-to-edit': isEditMode,
                     }"
                 >
                     <td>
@@ -48,70 +48,63 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex"
-import AppSubtasks from "./AppSubtasks.vue"
+    import { mapActions, mapState } from "vuex"
+    import AppSubtasks from "./AppSubtasks.vue"
 
-export default {
-    name: "AppTasks",
-    components: {
-        AppSubtasks,
-    },
-    computed: {
-        ...mapGetters([
-            "tasks",
-            "clickInclude",
-            "rowIsActive",
-            "rowNumber",
-            "actionName",
-            "actionIsActive",
-        ]),
-        isDeleteMode() {
-            return this.actionName === "delete" && this.actionIsActive
+    export default {
+        name: "AppTasks",
+        components: {
+            AppSubtasks,
         },
-        isEditMode() {
-            return this.actionName === "edit" && this.actionIsActive
+        computed: {
+            ...mapState(["tasks", "clickInclude", "row", "action"]),
+            isDeleteMode() {
+                return this.action.name === "delete" && this.action.isActive
+            },
+            isEditMode() {
+                return this.action.name === "edit" && this.action.isActive
+            },
         },
-    },
-    methods: {
-        ...mapActions([
-            "addIncludeElements",
-            "checkboxValueChange",
-            "updateRow",
-        ]),
-        isChosen(index) {
-            return this.rowIsActive && index === this.rowNumber
+        methods: {
+            ...mapActions([
+                "addIncludeElements",
+                "checkboxValueChange",
+                "updateRow",
+            ]),
+            isChosen(index) {
+                return this.row.isActive && index === this.row.number
+            },
+            cancelRow() {
+                this.updateRow(-1)
+            },
+            invokeOutsideClick() {
+                return this.row.isActive
+            },
+            include() {
+                return Array.from(this.clickInclude)
+            },
         },
-        cancelRow() {
-            this.updateRow(-1)
+        mounted() {
+            this.addIncludeElements([this.$refs["tasksBody"]])
         },
-        invokeOutsideClick() {
-            return this.rowIsActive
-        },
-        include() {
-            return Array.from(this.clickInclude)
-        },
-    },
-    mounted() {
-        this.addIncludeElements([this.$refs["tasksBody"]])
-    },
-}
+    }
 </script>
 
 <style lang="scss" scoped>
-.chosenRow {
-    background-color: var(--v-third-base);
-    &:hover {
-        background-color: var(--v-fourth-base) !important;
+    .chosen-row {
+        background-color: var(--v-third-base);
+        &:hover {
+            background-color: var(--v-fourth-base) !important;
+        }
     }
-}
 
-.chooseToEdit {
-    &:hover {
-        background-color: var(--v-third-base) !important;
+    .choose-to-edit {
+        &:hover {
+            background-color: var(--v-third-base) !important;
+        }
     }
-}
 
-.headerRow > th {
-    width: 50%;
-}
+    .header-row > th {
+        width: 50%;
+    }
 </style>
