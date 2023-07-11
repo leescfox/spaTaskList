@@ -1,6 +1,6 @@
-import Vue from "vue"
-import Vuex from "vuex"
-import startState from "@/store/startState"
+import Vue from 'vue'
+import Vuex from 'vuex'
+import startState from '@/store/startState'
 
 Vue.use(Vuex)
 
@@ -16,19 +16,19 @@ export default new Vuex.Store({
         },
         action: {
             isActive: false,
-            name: "",
+            name: '',
         },
         showTaskModal: false,
         showDeleteModal: false,
-        id: 0,
+        nextTaskId: 0,
     },
     getters: {
         taskStringified(state) {
             let taskObject = {
-                taskName: "",
+                taskName: '',
                 subtasks: [],
             }
-            if (state.row.number !== -1 && state.action.name === "edit") {
+            if (state.row.number !== -1 && state.action.name === 'edit') {
                 taskObject = state.tasks[state.row.number]
             }
             return JSON.stringify(taskObject)
@@ -40,14 +40,14 @@ export default new Vuex.Store({
     mutations: {
         SET_IDS(state) {
             for (let i = 0; i < state.tasks.length; i++) {
-                state.tasks[i].id = ++state.id
+                state.tasks[i].id = ++state.nextTaskId
                 for (let j = 0; j < state.tasks[i].subtasks.length; j++) {
-                    state.tasks[i].subtasks[j].id = ++state.id
+                    state.tasks[i].subtasks[j].id = ++state.nextTaskId
                 }
             }
         },
         INCREASE_ID(state) {
-            state.id += 1
+            state.nextTaskId += 1
         },
         LOCAL_STORAGE_GET(state, tasks) {
             state.tasks = tasks
@@ -104,44 +104,48 @@ export default new Vuex.Store({
             state.tasks.splice(index, 1)
         },
         LOCAL_STORAGE_SET(state, tasks) {
-            localStorage.setItem("tasks", JSON.stringify(tasks))
+            localStorage.setItem('tasks', JSON.stringify(tasks))
         },
     },
     actions: {
         setIds({ commit }) {
-            commit("SET_IDS")
+            commit('SET_IDS')
         },
-        getId({ commit, state }) {
-            commit("INCREASE_ID")
-            return state.id
+        returnUniqueId({ commit, state }) {
+            commit('INCREASE_ID')
+            return state.nextTaskId
         },
         localStorageGet({ commit }) {
-            let tasks = localStorage.getItem("tasks")
-            if (tasks === null) return
-            commit("LOCAL_STORAGE_GET", JSON.parse(tasks))
+            let tasks = localStorage.getItem('tasks')
+            if (tasks === null) {
+                return
+            }
+            commit('LOCAL_STORAGE_GET', JSON.parse(tasks))
         },
         addIncludeElements({ commit }, includeElements) {
-            commit("ADD_INCLUDE_ELEMENTS", includeElements)
+            commit('ADD_INCLUDE_ELEMENTS', includeElements)
         },
         setHistoryState({ commit, getters }) {
-            commit("SET_HISTORY_STATE", getters.taskStringified)
+            commit('SET_HISTORY_STATE', getters.taskStringified)
         },
         updateRow({ commit, state, dispatch }, rowNumber) {
             if (rowNumber === -1) {
-                commit("UPDATE_ROW_IS_ACTIVE", false)
+                commit('UPDATE_ROW_IS_ACTIVE', false)
                 return
             }
-            commit("UPDATE_ROW_IS_ACTIVE", true)
-            commit("UPDATE_ROW_NUMBER", rowNumber)
-            if (state.action.isActive === false) return
-            commit("DEACTIVATE_ROW_AND_ACTION")
+            commit('UPDATE_ROW_IS_ACTIVE', true)
+            commit('UPDATE_ROW_NUMBER', rowNumber)
+            if (state.action.isActive === false) {
+                return
+            }
+            commit('DEACTIVATE_ROW_AND_ACTION')
             switch (state.action.name) {
-                case "edit":
-                    commit("SHOW_TASK_MODAL", true)
-                    dispatch("setHistoryState")
+                case 'edit':
+                    commit('SHOW_TASK_MODAL', true)
+                    dispatch('setHistoryState')
                     break
-                case "delete":
-                    commit("SHOW_DELETE_MODAL", true)
+                case 'delete':
+                    commit('SHOW_DELETE_MODAL', true)
                     break
                 default:
                     break
@@ -149,67 +153,69 @@ export default new Vuex.Store({
         },
         updateAction({ commit, state, dispatch }, action) {
             if (
-                action === "" ||
+                action === '' ||
                 (action === state.action.name && state.action.isActive)
             ) {
-                commit("UPDATE_ACTION_IS_ACTIVE", false)
+                commit('UPDATE_ACTION_IS_ACTIVE', false)
                 return
             }
-            commit("UPDATE_ACTION_IS_ACTIVE", true)
-            commit("UPDATE_ACTION_NAME", action)
-            if (action === "add") {
-                commit("SHOW_TASK_MODAL", true)
-                commit("DEACTIVATE_ROW_AND_ACTION")
+            commit('UPDATE_ACTION_IS_ACTIVE', true)
+            commit('UPDATE_ACTION_NAME', action)
+            if (action === 'add') {
+                commit('SHOW_TASK_MODAL', true)
+                commit('DEACTIVATE_ROW_AND_ACTION')
                 return
             }
-            if (!state.row.isActive) return
-            commit("DEACTIVATE_ROW_AND_ACTION")
+            if (!state.row.isActive) {
+                return
+            }
+            commit('DEACTIVATE_ROW_AND_ACTION')
             switch (action) {
-                case "edit":
-                    commit("SHOW_TASK_MODAL", true)
-                    dispatch("setHistoryState")
+                case 'edit':
+                    commit('SHOW_TASK_MODAL', true)
+                    dispatch('setHistoryState')
                     break
-                case "delete":
-                    commit("SHOW_DELETE_MODAL", true)
+                case 'delete':
+                    commit('SHOW_DELETE_MODAL', true)
                     break
                 default:
                     break
             }
         },
         updateHistory({ commit, state }, taskObject) {
-            commit("UPDATE_HISTORY", {
+            commit('UPDATE_HISTORY', {
                 newTaskState: JSON.stringify(taskObject),
                 index: state.historyArrayIndex,
             })
         },
         historyStep({ commit }, step) {
-            commit("HISTORY_STEP", step)
+            commit('HISTORY_STEP', step)
         },
         checkboxValueChange({ commit, state }, { taskIndex, subtaskIndex }) {
-            commit("CHECKBOX_VALUE_CHANGE", { taskIndex, subtaskIndex })
-            commit("LOCAL_STORAGE_SET", state.tasks)
+            commit('CHECKBOX_VALUE_CHANGE', { taskIndex, subtaskIndex })
+            commit('LOCAL_STORAGE_SET', state.tasks)
         },
         saveTask({ commit, state }, taskObject) {
-            commit("SAVE_TASK", {
+            commit('SAVE_TASK', {
                 updatedTask: JSON.parse(JSON.stringify(taskObject)),
                 index: state.row.number,
             })
-            commit("LOCAL_STORAGE_SET", state.tasks)
+            commit('LOCAL_STORAGE_SET', state.tasks)
         },
         async unshiftNewTask({ commit, state, dispatch }, taskObject) {
-            taskObject.id = await dispatch("getId")
-            commit("UNSHIFT_NEW_TASK", JSON.parse(JSON.stringify(taskObject)))
-            commit("LOCAL_STORAGE_SET", state.tasks)
+            taskObject.id = await dispatch('returnUniqueId')
+            commit('UNSHIFT_NEW_TASK', JSON.parse(JSON.stringify(taskObject)))
+            commit('LOCAL_STORAGE_SET', state.tasks)
         },
         deleteTask({ commit, state }) {
-            commit("DELETE_TASK", state.row.number)
-            commit("LOCAL_STORAGE_SET", state.tasks)
+            commit('DELETE_TASK', state.row.number)
+            commit('LOCAL_STORAGE_SET', state.tasks)
         },
         closeTaskModal({ commit }) {
-            commit("SHOW_TASK_MODAL", false)
+            commit('SHOW_TASK_MODAL', false)
         },
         closeDeleteModal({ commit }) {
-            commit("SHOW_DELETE_MODAL", false)
+            commit('SHOW_DELETE_MODAL', false)
         },
     },
 })

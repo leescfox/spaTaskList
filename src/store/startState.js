@@ -1,79 +1,79 @@
 export default [
     {
-        taskName: "Покупки",
+        taskName: 'Покупки',
         subtasks: [
             {
-                name: "Апельсины",
+                name: 'Апельсины',
                 checked: false,
             },
             {
-                name: "Яблоки",
+                name: 'Яблоки',
                 checked: true,
             },
             {
-                name: "Лук",
+                name: 'Лук',
                 checked: false,
             },
             {
-                name: "Курица",
+                name: 'Курица',
                 checked: false,
             },
             {
-                name: "Плавленый сыр",
+                name: 'Плавленый сыр',
                 checked: true,
             },
             {
-                name: "Печенье",
+                name: 'Печенье',
                 checked: false,
             },
             {
-                name: "Торт",
+                name: 'Торт',
                 checked: false,
             },
         ],
     },
     {
-        taskName: "Дом",
+        taskName: 'Дом',
         subtasks: [
             {
-                name: "Уборка",
+                name: 'Уборка',
                 checked: true,
             },
             {
-                name: "Посуда",
+                name: 'Посуда',
                 checked: false,
             },
             {
-                name: "Стирка",
+                name: 'Стирка',
                 checked: true,
             },
         ],
     },
     {
-        taskName: "Учёба",
+        taskName: 'Учёба',
         subtasks: [
             {
-                name: "Культура профессиональной коммуникации",
+                name: 'Культура профессиональной коммуникации',
                 checked: true,
             },
             {
-                name: "ТПР",
+                name: 'ТПР',
                 checked: false,
             },
             {
-                name: "Социология",
+                name: 'Социология',
                 checked: false,
             },
             {
-                name: "БД",
+                name: 'БД',
                 checked: true,
             },
             {
-                name: "ООП",
+                name: 'ООП',
                 checked: false,
             },
             {
-                name: "МИСПРИС",
+                name: 'МИСПРИС',
                 checked: false,
             },
         ],

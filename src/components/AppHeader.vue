@@ -47,67 +47,62 @@
 </template>
 
 <script>
-    import { mapState, mapActions } from "vuex"
+import { mapState, mapActions } from 'vuex'
 
-    export default {
-        name: "AppHeader",
-        data() {
-            return {
-                clickOutside: {
-                    handler: this.cancelAction,
-                    closeConditional: this.invokeOutsideClick,
-                    include: this.include,
-                },
-            }
+export default {
+    name: 'AppHeader',
+    data() {
+        return {
+            clickOutside: {
+                handler: this.cancelAction,
+                closeConditional: this.invokeOutsideClick,
+                include: this.include,
+            },
+        }
+    },
+    computed: {
+        ...mapState(['clickInclude', 'action']),
+        iconAdd() {
+            return this.action.isActive && this.action.name === 'add'
+                ? 'window-close'
+                : 'plus'
         },
-        computed: {
-            ...mapState(["clickInclude", "action"]),
-            iconAdd() {
-                return this.action.isActive && this.action.name === "add"
-                    ? "window-close"
-                    : "plus"
-            },
-            iconEdit() {
-                return this.action.isActive && this.action.name === "edit"
-                    ? "window-close"
-                    : "pencil-outline"
-            },
-            iconDelete() {
-                return this.action.isActive && this.action.name === "delete"
-                    ? "window-close"
-                    : "delete-outline"
-            },
+        iconEdit() {
+            return this.action.isActive && this.action.name === 'edit'
+                ? 'window-close'
+                : 'pencil-outline'
         },
-        methods: {
-            ...mapActions(["addIncludeElements", "updateAction"]),
-            cancelAction() {
-                this.updateAction("")
-            },
-            invokeOutsideClick() {
-                return this.action.isActive
-            },
-            include() {
-                return Array.from(this.clickInclude)
-            },
+        iconDelete() {
+            return this.action.isActive && this.action.name === 'delete'
+                ? 'window-close'
+                : 'delete-outline'
         },
-        mounted() {
-            this.addIncludeElements([
-                this.$refs["addBtn"].$el,
-                this.$refs["editBtn"].$el,
-                this.$refs["deleteBtn"].$el,
-            ])
+    },
+    methods: {
+        ...mapActions(['addIncludeElements', 'updateAction']),
+        cancelAction() {
+            this.updateAction('')
         },
-    }
+        invokeOutsideClick() {
+            return this.action.isActive
+        },
+        include() {
+            return Array.from(this.clickInclude)
+        },
+    },
+    mounted() {
+        this.addIncludeElements([
+            this.$refs['addBtn'].$el,
+            this.$refs['editBtn'].$el,
+            this.$refs['deleteBtn'].$el,
+        ])
+    },
+}
 </script>
 
 <style lang="scss" scoped>
-    .app-title {
-        font-family: Roboto, sans-serif;
-        line-height: 1;
-    }
-
-    .notActive::before {
-        background-color: transparent !important;
-        transition: background-color 1s;
-    }
+.app-title {
+    font-family: Roboto, sans-serif;
+    line-height: 1;
+}
 </style>

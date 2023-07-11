@@ -9,7 +9,7 @@
                 :input-value="subtask.checked"
                 :label="subtask.name"
                 @click="checkboxValueChange(index)"
-            ></v-checkbox>
+            />
         </div>
         <div ref="showHideContainer" class="pb-2 pl-2 show-hide-container">
             <v-checkbox
@@ -20,7 +20,7 @@
                 :input-value="subtask.checked"
                 :label="subtask.name"
                 @click="checkboxValueChange(maxElemsToShow + index)"
-            ></v-checkbox>
+            />
         </div>
         <div class="pl-2">
             <v-btn
@@ -39,76 +39,74 @@
 </template>
 
 <script>
-    export default {
-        name: "AppSubtasks",
-        props: {
-            subtasks: {
-                type: Array,
-                default() {
-                    return []
-                },
-            },
+export default {
+    name: 'AppSubtasks',
+    props: {
+        subtasks: {
+            type: Array,
+            default: () => [],
         },
-        data() {
-            return {
-                maxElemsToShow: 4,
-                showAll: false,
-            }
+    },
+    data() {
+        return {
+            maxElemsToShow: 4,
+            showAll: false,
+        }
+    },
+    computed: {
+        subtasksLength() {
+            return this.subtasks.length
         },
-        computed: {
-            subtasksLength() {
-                return this.subtasks.length
-            },
-            subtasksMainPart() {
-                return this.subtasks.slice(0, this.maxElemsToShow)
-            },
-            subtasksHidePart() {
-                return this.subtasks.slice(this.maxElemsToShow)
-            },
-            showBtn() {
-                return this.subtasksHidePart.length > 0
-            },
-            btnText() {
-                return this.showAll ? "Свернуть" : "Развернуть"
-            },
+        subtasksMainPart() {
+            return this.subtasks.slice(0, this.maxElemsToShow)
         },
-        methods: {
-            checkboxValueChange(index) {
-                this.$emit("checkbox-value-change", index)
-            },
-            setHeight() {
-                this.$refs["showHideContainer"].style.maxHeight = this.showAll
-                    ? `${this.$refs["showHideContainer"].scrollHeight}px`
-                    : 0
-            },
-            showAndHide() {
-                this.showAll = !this.showAll
-                this.setHeight()
-            },
+        subtasksHidePart() {
+            return this.subtasks.slice(this.maxElemsToShow)
         },
-        watch: {
-            showBtn() {
-                this.showAll = false
-            },
-            subtasksLength() {
-                this.setHeight()
-            },
+        showBtn() {
+            return this.subtasksHidePart.length > 0
         },
-    }
+        btnText() {
+            return this.showAll ? 'Свернуть' : 'Развернуть'
+        },
+    },
+    methods: {
+        checkboxValueChange(index) {
+            this.$emit('checkbox-value-change', index)
+        },
+        setHeight() {
+            this.$refs['showHideContainer'].style.maxHeight = this.showAll
+                ? `${this.$refs['showHideContainer'].scrollHeight}px`
+                : 0
+        },
+        showAndHide() {
+            this.showAll = !this.showAll
+            this.setHeight()
+        },
+    },
+    watch: {
+        showBtn() {
+            this.showAll = false
+        },
+        subtasksLength() {
+            this.setHeight()
+        },
+    },
+}
 </script>
 
 <style lang="scss" scoped>
-    .single-task {
-        width: max-content;
-    }
+.single-task {
+    width: max-content;
+}
 
-    .show-hide-container {
-        overflow: hidden;
-        transition: max-height 0.6s ease-out;
-        max-height: 0;
-    }
+.show-hide-container {
+    overflow: hidden;
+    transition: max-height 0.6s ease-out;
+    max-height: 0;
+}
 
-    .show-more-less-btn {
-        min-width: 25% !important;
-    }
+.show-more-less-btn {
+    min-width: 25% !important;
+}
 </style>

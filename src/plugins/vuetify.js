@@ -1,5 +1,5 @@
-import Vue from "vue"
-import Vuetify from "vuetify/lib"
+import Vue from 'vue'
+import Vuetify from 'vuetify/lib'
 
 Vue.use(Vuetify)
 
@@ -10,13 +10,12 @@ export default new Vuetify({
         },
         themes: {
             light: {
-                // primary: "#8a0f86",
-                primary: "#6f116c",
-                secondary: "#dcf3fe",
-                third: "#fddbff",
-                fourth: "#f9ccff",
-                fifth: "#2c3e50",
-                deleteMode: "#ff0000",
+                primary: '#6f116c',
+                secondary: '#dcf3fe',
+                third: '#fddbff',
+                fourth: '#f9ccff',
+                fifth: '#2c3e50',
+                deleteMode: '#ff0000',
             },
         },
     },

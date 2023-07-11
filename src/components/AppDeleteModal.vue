@@ -18,38 +18,40 @@
 </template>
 
 <script>
-    import { mapActions, mapState } from "vuex"
+import { mapActions, mapState } from 'vuex'
 
-    export default {
-        name: "AppDeleteModal",
-        computed: {
-            ...mapState(["showDeleteModal"]),
-            modalState: {
-                get() {
-                    return this.showDeleteModal
-                },
-                set() {
-                    this.closeDeleteModal()
-                },
+export default {
+    name: 'AppDeleteModal',
+    computed: {
+        ...mapState(['showDeleteModal']),
+        modalState: {
+            get() {
+                return this.showDeleteModal
             },
-        },
-        methods: {
-            ...mapActions(["closeDeleteModal", "deleteTask"]),
-            processAnswer(answer) {
-                if (answer) this.deleteTask()
+            set() {
                 this.closeDeleteModal()
             },
         },
-    }
+    },
+    methods: {
+        ...mapActions(['closeDeleteModal', 'deleteTask']),
+        processAnswer(answer) {
+            if (answer) {
+                this.deleteTask()
+            }
+            this.closeDeleteModal()
+        },
+    },
+}
 </script>
 
 <style lang="scss" scoped>
-    .modal-card-body {
-        font-size: 1rem;
-    }
+.modal-card-body {
+    font-size: 1rem;
+}
 
-    .actions-row {
-        display: flex;
-        justify-content: flex-end;
-    }
+.actions-row {
+    display: flex;
+    justify-content: flex-end;
+}
 </style>

@@ -28,7 +28,7 @@
                                     label="Название задания"
                                     :value="task.taskName"
                                     @change="taskNameChange"
-                                ></v-textarea>
+                                />
                             </div>
                         </v-row>
                         <v-row class="modal-card-row">
@@ -95,7 +95,7 @@
                                                             index
                                                         )
                                                     "
-                                                ></v-simple-checkbox>
+                                                />
                                             </td>
                                             <td class="px-1">
                                                 <v-text-field
@@ -121,7 +121,7 @@
                                                     @blur="
                                                         focusLose($event, index)
                                                     "
-                                                ></v-text-field>
+                                                />
                                             </td>
                                         </tr>
                                     </tbody>
@@ -208,236 +208,241 @@
 </template>
 
 <script>
-    import { mapGetters, mapActions, mapState } from "vuex"
+import { mapGetters, mapActions, mapState } from 'vuex'
 
-    export default {
-        name: "AppTaskModal",
-        data() {
-            return {
-                task: {
-                    taskName: "",
-                    subtasks: [],
-                },
-                deleteSubtaskMode: false,
-                tbody: [],
-                includeAdded: false,
-                isSaved: true,
-                unsavedExitModal: false,
-                isNewTaskAdded: false,
-                firstSubtask: null,
-                currentStep: 0,
-            }
-        },
-        computed: {
-            ...mapState([
-                "action",
-                "showTaskModal",
-                "historyArray",
-                "historyArrayIndex",
-            ]),
-            ...mapGetters(["taskStringified", "historyArrayCurrentElement"]),
-            modalState: {
-                get() {
-                    return this.showTaskModal
-                },
-                set() {
-                    this.closeTaskModal()
-                },
+export default {
+    name: 'AppTaskModal',
+    data() {
+        return {
+            task: {
+                taskName: '',
+                subtasks: [],
             },
-            titleText() {
-                return `${
-                    this.action.name === "add" ? "Добавить" : "Редактировать"
-                } задание`
+            deleteSubtaskMode: false,
+            tbody: [],
+            includeAdded: false,
+            isSaved: true,
+            unsavedExitModal: false,
+            isNewTaskAdded: false,
+            firstSubtask: null,
+            currentStep: 0,
+        }
+    },
+    computed: {
+        ...mapState([
+            'action',
+            'showTaskModal',
+            'historyArray',
+            'historyArrayIndex',
+        ]),
+        ...mapGetters(['taskStringified', 'historyArrayCurrentElement']),
+        modalState: {
+            get() {
+                return this.showTaskModal
             },
-            iconDelete() {
-                return this.deleteSubtaskMode
-                    ? "window-close"
-                    : "delete-outline"
-            },
-            undoDisabled() {
-                return this.historyArrayIndex === 0
-            },
-            redoDisabled() {
-                return this.historyArrayIndex + 1 === this.historyArray.length
-            },
-        },
-        methods: {
-            ...mapActions([
-                "getId",
-                "closeTaskModal",
-                "setHistoryState",
-                "updateHistory",
-                "historyStep",
-                "saveTask",
-                "unshiftNewTask",
-            ]),
-            unsavedExitAttempt() {
-                if (this.isSaved === false) {
-                    this.unsavedExitModal = true
-                    return
-                }
+            set() {
                 this.closeTaskModal()
             },
-            isOutsideModalClick() {
-                return this.showTaskModal && !this.unsavedExitModal
-            },
-            closeExitModal(answer) {
-                this.unsavedExitModal = false
-                if (answer) this.closeTaskModal()
-            },
-            update() {
-                this.updateHistory(this.task)
-                this.isSaved = false
-            },
-            setFirstElemRef(ref, index) {
-                if (index !== 0) return
-                this.firstSubtask = ref
-            },
-            async addSubtask() {
-                if (this.task.subtasks.length > 0) {
-                    let value = this.task.subtasks[0].name
-                    if (value === "" || value === null) {
-                        this.firstSubtask.$refs.input.focus()
-                        return
-                    }
-                }
-                let newId = await this.getId()
-                this.task.subtasks.unshift({
-                    checked: false,
-                    name: "",
-                    id: newId,
-                })
-                this.update()
-                this.$nextTick(() => {
+        },
+        titleText() {
+            return `${
+                this.action.name === 'add' ? 'Добавить' : 'Редактировать'
+            } задание`
+        },
+        iconDelete() {
+            return this.deleteSubtaskMode ? 'window-close' : 'delete-outline'
+        },
+        undoDisabled() {
+            return this.historyArrayIndex === 0
+        },
+        redoDisabled() {
+            return this.historyArrayIndex + 1 === this.historyArray.length
+        },
+    },
+    methods: {
+        ...mapActions([
+            'returnUniqueId',
+            'closeTaskModal',
+            'setHistoryState',
+            'updateHistory',
+            'historyStep',
+            'saveTask',
+            'unshiftNewTask',
+        ]),
+        unsavedExitAttempt() {
+            if (this.isSaved === false) {
+                this.unsavedExitModal = true
+                return
+            }
+            this.closeTaskModal()
+        },
+        isOutsideModalClick() {
+            return this.showTaskModal && !this.unsavedExitModal
+        },
+        closeExitModal(answer) {
+            this.unsavedExitModal = false
+            if (answer) {
+                this.closeTaskModal()
+            }
+        },
+        update() {
+            this.updateHistory(this.task)
+            this.isSaved = false
+        },
+        setFirstElemRef(ref, index) {
+            if (index !== 0) {
+                return
+            }
+            this.firstSubtask = ref
+        },
+        async addSubtask() {
+            if (this.task.subtasks.length > 0) {
+                let value = this.task.subtasks[0].name
+                if (value === '' || value === null) {
                     this.firstSubtask.$refs.input.focus()
-                })
-            },
-            deleteSubtaskClick() {
-                this.deleteSubtaskMode = !this.deleteSubtaskMode
-            },
-            deleteSubtaskClickOutside() {
-                this.deleteSubtaskMode = false
-            },
-            include() {
-                if (this.includeAdded === false) {
-                    this.tbody = document.getElementsByClassName("modal-tbody")
-                    this.includeAdded = true
-                }
-                return Array.from(this.tbody)
-            },
-            subtaskRowClick(index) {
-                if (this.deleteSubtaskMode) {
-                    this.task.subtasks.splice(index, 1)
-                    this.update()
-                }
-            },
-            taskNameChange(value) {
-                this.task.taskName = value
-                this.update()
-            },
-            checkboxValueChange(value, index) {
-                this.task.subtasks[index].checked = value
-                this.update()
-            },
-            subtaskValueChange(value, index) {
-                if (this.task.subtasks[index].name === value) return
-                this.task.subtasks[index].name = value
-                this.update()
-            },
-            focusLose(e, index) {
-                if (e.relatedTarget === null) return
-                if (
-                    e.relatedTarget.classList.contains("add-subtask-btn") &&
-                    index === 0
-                ) {
                     return
                 }
-                let value = this.task.subtasks[index].name
-                if (value === "" || value === null) {
-                    this.task.subtasks.splice(index, 1)
-                    this.update()
+            }
+            let newId = await this.returnUniqueId()
+            this.task.subtasks.unshift({
+                checked: false,
+                name: '',
+                id: newId,
+            })
+            this.update()
+            this.$nextTick(() => {
+                this.firstSubtask.$refs.input.focus()
+            })
+        },
+        deleteSubtaskClick() {
+            this.deleteSubtaskMode = !this.deleteSubtaskMode
+        },
+        deleteSubtaskClickOutside() {
+            this.deleteSubtaskMode = false
+        },
+        include() {
+            if (this.includeAdded === false) {
+                this.tbody = document.getElementsByClassName('modal-tbody')
+                this.includeAdded = true
+            }
+            return Array.from(this.tbody)
+        },
+        subtaskRowClick(index) {
+            if (this.deleteSubtaskMode) {
+                this.task.subtasks.splice(index, 1)
+                this.update()
+            }
+        },
+        taskNameChange(value) {
+            this.task.taskName = value
+            this.update()
+        },
+        checkboxValueChange(value, index) {
+            this.task.subtasks[index].checked = value
+            this.update()
+        },
+        subtaskValueChange(value, index) {
+            if (this.task.subtasks[index].name === value) {
+                return
+            }
+            this.task.subtasks[index].name = value
+            this.update()
+        },
+        focusLose(e, index) {
+            if (e.relatedTarget === null) {
+                return
+            }
+            if (
+                e.relatedTarget.classList.contains('add-subtask-btn') &&
+                index === 0
+            ) {
+                return
+            }
+            let value = this.task.subtasks[index].name
+            if (value === '' || value === null) {
+                this.task.subtasks.splice(index, 1)
+                this.update()
+            }
+        },
+        undoRedo(step) {
+            this.historyStep(step)
+            this.task = JSON.parse(this.historyArrayCurrentElement)
+            this.isSaved = this.currentStep === this.historyArrayIndex
+        },
+        save() {
+            let wasDeleted = false
+            let value = ''
+            for (let i = 0; i < this.task.subtasks.length; i++) {
+                value = this.task.subtasks[i].name
+                if (value !== '' && value !== null) {
+                    continue
                 }
-            },
-            undoRedo(step) {
-                this.historyStep(step)
-                this.task = JSON.parse(this.historyArrayCurrentElement)
-                this.isSaved = this.currentStep === this.historyArrayIndex
-            },
-            save() {
-                let wasDeleted = false
-                let value = ""
-                for (let i = 0; i < this.task.subtasks.length; i++) {
-                    value = this.task.subtasks[i].name
-                    if (value !== "" && value !== null) continue
-                    this.task.subtasks.splice(i, 1)
-                    wasDeleted = true
-                }
-                if (wasDeleted) {
-                    this.updateHistory(this.task)
-                }
-                if (
-                    this.action.name === "add" &&
-                    this.isNewTaskAdded === false
-                ) {
-                    this.unshiftNewTask(this.task)
-                    this.isNewTaskAdded = true
-                } else {
-                    this.saveTask(this.task)
-                }
+                this.task.subtasks.splice(i, 1)
+                wasDeleted = true
+            }
+            if (wasDeleted) {
+                this.updateHistory(this.task)
+            }
+            if (this.action.name === 'add' && this.isNewTaskAdded === false) {
+                this.unshiftNewTask(this.task)
+                this.isNewTaskAdded = true
+            } else {
+                this.saveTask(this.task)
+            }
+            this.isSaved = true
+            this.currentStep = this.historyArrayIndex
+        },
+    },
+    watch: {
+        showTaskModal(newValue) {
+            if (newValue) {
                 this.isSaved = true
-                this.currentStep = this.historyArrayIndex
-            },
+                this.isNewTaskAdded = false
+                this.firstSubtask = null
+                this.currentStep = 0
+                this.task = JSON.parse(this.taskStringified)
+                this.setHistoryState()
+            }
         },
-        watch: {
-            showTaskModal(newValue) {
-                if (newValue) {
-                    this.isSaved = true
-                    this.isNewTaskAdded = false
-                    this.firstSubtask = null
-                    this.currentStep = 0
-                    this.task = JSON.parse(this.taskStringified)
-                    this.setHistoryState()
-                }
-            },
-        },
-    }
+    },
+}
 </script>
 
 <style lang="scss" scoped>
-    .modal-card-body {
-        font-size: 1rem;
-    }
+.modal-card-body {
+    font-size: 1rem;
+}
 
-    .modal-card-row {
-        margin: 20px 0 0 0;
-        &:first-of-type {
-            margin: 0;
+.modal-card-row {
+    margin: 20px 0 0 0;
+    &:first-of-type {
+        margin: 0;
+    }
+}
+
+.row-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    &.actions-row {
+        justify-content: end;
+    }
+}
+
+.tasks-table {
+    width: 100%;
+    .header-row {
+        .status-cell {
+            width: 0%;
         }
     }
+}
 
-    .row-container {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        &.actions-row {
-            justify-content: end;
-        }
+.сheckbox-cell {
+    display: flex;
+    justify-content: center;
+    .v-input--selection-controls__input {
+        margin: 0;
     }
-
-    .tasks-table {
-        width: 100%;
-        .header-row {
-            .status-cell {
-                width: 0%;
-            }
-        }
-    }
-
-    .сheckbox-cell {
-        display: flex;
-        justify-content: center;
-        .v-input--selection-controls__input {
-            margin: 0;
-        }
-    }
+}
 </style>
